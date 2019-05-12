@@ -210,10 +210,12 @@ int gpio_fd_close(int fd)
 /****************************************************************
  * set_LED3
  ****************************************************************/
-int set_LED3(long value){
+int set_LED(long value, char* string_value){
 
 	FILE *ioval=NULL;
-	char path[80]="/sys/class/leds/beaglebone:green:usr3/brightness";
+	char path[80]="/sys/class/leds/beaglebone:green:usr"
+        strcat(path,string_value);
+        strcat(path,"/brightness");
     
 	ioval = fopen(path, "r+");
 	if(ioval != NULL){
@@ -233,10 +235,10 @@ int main(){
    while(1){
   	 gpio_get_value(45,&temp);
   	 if (temp ==1){
-         	set_LED3(1);    
+         	set_LED3(1,"3");    
     	}
     else{
-         	set_LED3(0);
+         	set_LED3(0,"3");
     	}
    }
    return 0;
