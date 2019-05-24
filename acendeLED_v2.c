@@ -1,21 +1,13 @@
 /****************************************************************
 This code turns the LED on every time the button (connect on GPIO 45, PIN P8-11) is pressed down
  ****************************************************************/
-int main(){
-   int temp=0;
-   int previous_temp=0;
-   while(1){
-  	 gpio_get_value(45,&temp);
-  	 if (temp ==1){
-         	set_LED3(1);    
-    	}
-    else{
-         	set_LED3(0);
-    	}
-   }
-   return 0;
 
-}#include <stdio.h>
+#define PASSWORD_SIZE 5
+#define LEFT_PIN 44 /*Pin P8-12*/
+#define RIGHT_PIN 26 /*Pin P8-14*/
+#define TIME_CONST 22
+ 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -213,7 +205,7 @@ int gpio_fd_close(int fd)
 int set_LED(long value, char* string_value){
 
 	FILE *ioval=NULL;
-	char path[80]="/sys/class/leds/beaglebone:green:usr"
+	char path[80]="/sys/class/leds/beaglebone:green:usr";
         strcat(path,string_value);
         strcat(path,"/brightness");
     
@@ -227,19 +219,116 @@ int set_LED(long value, char* string_value){
 
 }
 /****************************************************************
-This code turns the LED on every time the button (connect on GPIO 45, PIN P8-11) is pressed down
+ * unlocker
  ****************************************************************/
+int unlocker(int* position, int* last_input, int* password,int* state){ 
+    if(password[*(position)] == *last_input){
+       *(position) =*(position)+ 1;
+        *(last_input) =0;
+       printf("correto!\n");
+    }
+    else{}
+
+    if (*(position) == PASSWORD_SIZE)
+    {
+       printf("abriu!\n");
+       set_LED(1, "3");
+       *position = 0; 
+       *last_input =0;
+       *state =1;
+    }
+    else{} 
+    return 0;
+}
+
+/****************************************************************
+ * Locker
+ ****************************************************************/
+int locker(int* state){ 
+      if(*state ==1){
+        printf("fechou!\n");
+        set_LED(0,"3");
+        *state =0;
+      }
+
+    
+    return 0;
+}
+/****************************************************************
+ * Decoder
+ ****************************************************************/
+
+ int decoder(int list[2]){
+     if(list[0]==1 && list[1]==0){return -1;}
+     else if(list[0]==0 && list[1]==1){return 1;}
+     else{return 0;}
+
+
+}
+/****************************************************************
+ * Debouncing Code
+ ****************************************************************/
+void DebounceSwitch(int *Key_changed,int *status, int pin, int *Count)
+{
+    int RawState=0;
+    *Key_changed = 0;
+    gpio_get_value(pin,&RawState);
+    if (RawState == *status) {
+        // Set the timer which will allow a change from the current state.
+        if (*status==0) *Count = 10;
+        else                 *Count = 2;
+    } else {
+        // Key has changed - wait for new state to become stable.
+        if (--*Count == 0) {
+            // Timer expired - accept the change.
+            *status = RawState;
+            *Key_changed=1;
+            // And reset the timer.
+            if (*status==0) *Count = 10;
+            else                 *Count = 2;
+        }
+    }
+}
+
+/****************************************************************
+
+ ****************************************************************/
+int pins[2] = {LEFT_PIN,RIGHT_PIN};
+
 int main(){
-   int temp=0;
-   int previous_temp=0;
+      
+   int i=0;
+   
+   int state =0; /*0 Close,1 Open*/
+   int button_status[2] = {0,0};  
+   int button_pressed[2] = {0,0};
+   int button_changed[2] = {0,0};                
+   int count[2] = {10,10}; 
+   
+   int time =0;
+
+   int correct_password[PASSWORD_SIZE]={3,-3,2,-1,1};
+   int password_position =0;
+   int sum = 0;
+
+
    while(1){
-  	 gpio_get_value(45,&temp);
-  	 if (temp ==1){
-         	set_LED3(1,"3");    
-    	}
-    else{
-         	set_LED3(0,"3");
-    	}
+       
+       DebounceSwitch(&button_changed[0],&button_status[0],pins[0],&count[0]);
+       DebounceSwitch(&button_changed[1],&button_status[1],pins[1],&count[1]);
+       if((button_changed[0]==1 && button_status[0]==1) || (button_changed[1] ==1 && button_status[1]==1)){
+       		sum =sum+decoder(button_status);
+                locker(&state);
+       		printf("Status 1: %d, Status 2: %d\n", button_status[0],button_status[1]);
+       		printf("Sum: %d \n", sum);
+      		unlocker(&password_position, &sum,correct_password,&state);
+       		printf("Position: %d ", password_position);
+       		printf("State: %d \n", state);
+                button_changed[0]=0;
+                button_changed[1] =0; 
+       }
+
+
    }
    return 0;
 
