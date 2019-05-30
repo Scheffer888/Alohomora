@@ -9,7 +9,7 @@ This code turns the LED on every time the button (connect on GPIO 45, PIN P8-11)
 #define PIN_4 65 /*Pin P8-18*/
 #define PIN_LED 48 /*Pin P9-15*/
 #define TIME_CONST 22
-#define MAX_COMBINATIONS 6
+#define MAX_COMBINATIONS 12
 #define ENCODER_SIZE 6
  
 #include <stdio.h>
@@ -224,82 +224,8 @@ int set_LED(long value, char* string_value){
 	return 0;
 
 }
-/****************************************************************
- * unlocker
- ****************************************************************/
-int unlocker(int* position, int* last_input,int last_difference,int* correct_position, int* password,int* state, int led_pin){ 
-
-    if(password[*(position)] == *last_input){
-      *correct_position =1;
-      *position = *position + 1;
-
-    }
-    else{*correct_position =0;}
-    
-    if(*correct_position == 1 && (last_difference * password[*position])>0){
-
-	*last_input = last_difference;
-	printf("Correto! \n");
-    }
-    else if(*correct_position == 1 && (last_difference * password[*position])<=0){*position = *position -1;}
-    else{}   
-
-    
-
-    if (*(position) == PASSWORD_SIZE)
-    {
-       printf("abriu!\n");
-       set_LED(1, "3");
-       gpio_set_value(led_pin,1);
-       *position = 0; 
-       *last_input =0;
-       *state =1;
-    }
-    else{}
- 
-    return 0;
-}
-
-/****************************************************************
- * anti_guesser
- ****************************************************************/
-int anti_guesser(int* position, int* last_input, int* password){
-	if(password[*position]<0){
-		if(*last_input > 0){
-			*position =0;
-                        *last_input =0;
-                        printf("Achou errado otário! \n");
-		}
-	}
-	else if(password[*position]>0){
-		if(*last_input < 0){
-			*position =0;
-                        *last_input =0;
- 			printf("Errou! \n");
-		}
-	}
-	else{}
-        return 0;
 
 
-}
-/****************************************************************
- * Locker
- ****************************************************************/
-int locker(int* position, int* last_input,int* state,int led_pin){ 
-      if(*state ==1){
-        printf("Fechou!\n");
-        set_LED(0,"3");
-        gpio_set_value(led_pin,0);
-        *state =0;
-	*position=0;
-	*last_input=0;
-        return 1;
-      }
-
-    
-    return 0;
-}
 /****************************************************************
  * Decoder
  ****************************************************************/
@@ -307,27 +233,15 @@ int locker(int* position, int* last_input,int* state,int led_pin){
  int position_decoder(int list[4]){
 	if(list[0] ==0 && list[1] ==0 && list[2] ==0 && list[3] ==0){return 3;}
         else if(list[0] ==0 && list[1] ==0 && list[2] ==0 && list[3] ==1){return 4;}
-        else if(list[0] ==0 && list[1] ==1 && list[2] ==0 && list[3] ==1){return 5;}
+        else if(list[0] ==1 && list[1] ==0 && list[2] ==0 && list[3] ==1){return 5;}
         else if(list[0] ==1 && list[1] ==1 && list[2] ==0 && list[3] ==1){return 0;}
-        else if(list[0] ==1 && list[1] ==0 && list[2] ==0 && list[3] ==1){return 1;}
-        else if(list[0] ==1 && list[1] ==0 && list[2] ==1 && list[3] ==1){return 2;}
+        else if(list[0] ==0 && list[1] ==1 && list[2] ==0 && list[3] ==1){return 1;}
+        else if(list[0] ==0 && list[1] ==1 && list[2] ==1 && list[3] ==1){return 2;}
 	else{return -1;}
 
 
 }
 
-/****************************************************************
- * Reset
- ****************************************************************/
-int reset(int* position, int* last_input, int maximum_steps){
-	if(*last_input > maximum_steps || *last_input < -maximum_steps){
-		*position =0;
- 	 	*last_input =0;
-		printf("Insira a senha no encoder. \n");
-	}
-	else{}
-	return 0;
-}
 
 /****************************************************************
  * Debouncing Code
@@ -382,23 +296,19 @@ int main(){
    int password_position =0;
    int sum = 0;
    
-   gpio_get_value(pins[0],&encoder_status[0]);
-   gpio_get_value(pins[1],&encoder_status[1]);
-   gpio_get_value(pins[2],&encoder_status[2]);
-   gpio_get_value(pins[3],&encoder_status[3]);
+   for(i=0;i<4;i++){
+	gpio_get_value(pins[i],&encoder_status[i]);
+   }
+     
    previous_position = position_decoder(encoder_status);
    
    printf("Insira a senha no encoder. \n");
 
    while(1){
-       
-       DebounceSwitch(&encoder_changed[0],&encoder_status[0],&encoder_previous_status[0],pins[0],&count[0]);
-       DebounceSwitch(&encoder_changed[1],&encoder_status[1],&encoder_previous_status[1],pins[1],&count[1]);
-       DebounceSwitch(&encoder_changed[2],&encoder_status[2],&encoder_previous_status[2],pins[2],&count[2]);
-       DebounceSwitch(&encoder_changed[3],&encoder_status[3],&encoder_previous_status[3],pins[3],&count[3]);
-
-
- 
+       for(i=0;i<4;i++){
+       		DebounceSwitch(&encoder_changed[i],&encoder_status[i],&encoder_previous_status[i],pins[i],&count[i]);
+       }
+     
        if(encoder_changed[0] == 1 || encoder_changed[1] == 1 || encoder_changed[2] == 1 || encoder_changed[3] == 1){
        		//printf("Encoder 0: %d, Encoder 1: %d, Encoder 2: %d, Encoder 3: %d  \n",encoder_status[0],encoder_status[1],encoder_status[2],encoder_status[3]);
 		position=position_decoder(encoder_status);
@@ -471,14 +381,13 @@ int main(){
 			
 
 		}
-		else{printf("Error reading encoder, error code: %d%d%d%d \n", encoder_status[0],encoder_status[1],encoder_status[2],encoder_status[3]);
+		else{printf("Failure to read encoder, error code: %d%d%d%d \n", encoder_status[0],encoder_status[1],encoder_status[2],encoder_status[3]);
 		}
                 
-		encoder_changed[0]=0;
-                encoder_changed[1] =0;
-                encoder_changed[2] =0;
-                encoder_changed[3] =0; 
 
+  		for(i=0;i<4;i++){
+			encoder_changed[i]=0;
+   		}
            
        }
 
