@@ -81,7 +81,7 @@ O objetivo desse projeto era criar um sistema com comportamento semelhante ao um
 
 ![](GifdoProjeto.gif)
 
-## Componentes Lista de Materias
+## Componentes Lista de Materiais
 
 * Beaglebone Black Rev C, com Debian 9.5 2018-10-07 4GB SD IoT instalado;
 * 1 LED
