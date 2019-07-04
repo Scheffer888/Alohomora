@@ -77,7 +77,7 @@ Cofre Digital
 
 ## Sobre o projeto
 
-O objetivo desse projeto era criar um sistema com comportamento semelhante ao um mecanismo de trava de um cofre. O sistema foi feito utilizando um computador embarcado ao invés do mecanismo mecânico normalmente utilizado. O computdaor embarcado utilizado foi a Beagle Bone Black.
+O objetivo desse projeto era criar um sistema com comportamento semelhante ao um mecanismo de trava de um cofre. O sistema foi feito utilizando um computador embarcado ao invés do mecanismo mecânico normalmente utilizado. O computador embarcado utilizado foi a Beagle Bone Black.
 
 ![](GifdoProjeto.gif)
 
