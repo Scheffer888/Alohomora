@@ -6,7 +6,7 @@ Digital Safe Box
 
 This project objective was to make a system that had similar behavior to a safe box lock mechanism. The system was developed with an embedded computer, instead of the mechanical mechanism that is usually used. The embedded computer used was a Beagle Bone Black. 
 
-![](Gif do Projeto.gif)
+![](GifdoProjeto.gif)
 
 ## Components - Bill of Materials
 
@@ -79,7 +79,7 @@ Cofre Digital
 
 O objetivo desse projeto era criar um sistema com comportamento semelhante ao um mecanismo de trava de um cofre. O sistema foi feito utilizando um computador embarcado ao invés do mecanismo mecânico normalmente utilizado. O computdaor embarcado utilizado foi a Beagle Bone Black.
 
-![](Gif do Projeto.gif)
+![](GifdoProjeto.gif)
 
 ## Componentes Lista de Materias
 
