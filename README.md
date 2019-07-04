@@ -132,10 +132,10 @@ void DebounceSwitch(int *Key_changed,int *status,int *previous_status, int pin, 
 ```
 
 ## Bibliotecas Utlizadas
-* [GPIO functions](https://github.com/aferodeveloper/afLib/blob/master/linux/gpiolib.cpp) - Usamos uma dessa funções para ler os inputs
+* [Funções de GPIO ](https://github.com/aferodeveloper/afLib/blob/master/linux/gpiolib.cpp) - Usamos uma dessa funções para ler os inputs
 
 ## Video do Projeto
-  [Project Video](https://github.com/Scheffer888/Alohomora/blob/master/V%C3%ADdeo%20do%20Projeto) 
+  [Video do Projeto](https://github.com/Scheffer888/Alohomora/blob/master/V%C3%ADdeo%20do%20Projeto) 
 
 ## Membros da equipe
 
