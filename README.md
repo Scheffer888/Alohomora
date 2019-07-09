@@ -94,7 +94,6 @@ O objetivo desse projeto era criar um sistema com comportamento semelhante ao um
 ## Esquemático do projeto
 
 ![alt text](https://docs.google.com/drawings/d/e/2PACX-1vQb0JCP48ShjpVStbLx8hNEBLTI6bsRhMRw4brJcJUAHbIoU5h5Pbxlj3mSAH578EQZy6Aa61WzGuFH/pub?w=480&h=360)
-![alt text](https://docs.google.com/drawings/d/e/2PACX-1vSLnZQH8X6IR1c-Td4bJW6P8SZgz0G004u8mvSXAZOpX-wgTBJ60BAs1oOIyZVnBQzvBHFo1dm0Z1zh/pub?w=480&h=360)
 
 ### História do desenvolvimento do projeto
 
